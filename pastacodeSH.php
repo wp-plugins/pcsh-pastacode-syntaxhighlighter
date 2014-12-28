@@ -2,17 +2,17 @@
 /**
  * Plugin Name: PCSH
  * Plugin URI: https://github.com/Webaib/PastacodeAndSyntaxHighlighter
- * Description: Insert a code from GitHub, Gist or whatever with SyntaxHighlighter. 
- * Version: 0.2 
+ * Description: Insert a code from GitHub, Gist or whatever with SyntaxHighlighter. Based on the PastaCode plugin.  
+ * Version: 0.3
  * Text Domain: pcsh
- * Author: Yury Pavlov, Willy Bahuaud, Julio Potier
+ * Author: Yury Pavlov
  * Author URI: http://www.overscale.net  
- * Contributors: webaib, willybahuaud, juliobox
+ * Contributors: webaib
  */
 
 require_once 'SHLoader.php';
 
-const PCSH_VERSION = '0.2';
+const PCSH_VERSION = '0.3';
 
 const INIT_SH = 'initSH';
 
@@ -436,9 +436,7 @@ function pcsh_plugin_row_meta($plugin_meta, $plugin_file) {
         $plugin_meta = array_slice($plugin_meta, 0, -2);
         $a = array();
         $authors = array(
-            array('name'=>'Yury Pavlov', 'url'=>'http://www.overscale.net'),
-            array('name'=>'Willy Bahuaud', 'url'=>'http://wabeo.fr'),
-            array('name'=>'Julio Potier', 'url'=>'http://www.boiteaweb.fr')
+            array('name'=>'Yury Pavlov', 'url'=>'http://www.overscale.net')
         );
         
         foreach ($authors as $author) {

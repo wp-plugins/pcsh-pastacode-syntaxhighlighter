@@ -3,7 +3,7 @@ Contributors: webaib
 Tags: embed, code, version, github, bitbucket, gist, code, SyntaxHighlighter, color highlight, syntaxique coloration
 Requires at least: 3.1
 Tested up to: 4.0
-Stable tag: 0.2
+Stable tag: 0.3
 License: GPLv2 or later
 
 Use PCSH to add code into your posts with the awesome SyntaxHighlighter plugin. So, past'a code!
