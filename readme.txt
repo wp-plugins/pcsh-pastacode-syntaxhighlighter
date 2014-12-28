@@ -1,5 +1,5 @@
 === PCSH (PastaCode and SyntaxHighlighter) ===
-Contributors: webaib, willybahuaud, juliobox
+Contributors: webaib
 Tags: embed, code, version, github, bitbucket, gist, code, SyntaxHighlighter, color highlight, syntaxique coloration
 Requires at least: 3.1
 Tested up to: 4.0
@@ -10,7 +10,7 @@ Use PCSH to add code into your posts with the awesome SyntaxHighlighter plugin. 
 
 == Description ==
 
-With PCSH, you can easily add code into your posts with the awesome SyntaxHighlighter js-library.
+With PCSH (based on the Pastacode plugin), you can easily add code into your posts with the awesome SyntaxHighlighter js-library.
 You can insert source code into the post editor, from a file, or from webservices like GitHub, Gist, Pastebin or BitBucket. Webservices responses are cached in order to avoid too many HTTP requests.
 
 Don't worry about posts updates while upgrading codes!
