@@ -3,7 +3,7 @@
  * Plugin Name: PCSH
  * Plugin URI: https://github.com/Webaib/PastacodeAndSyntaxHighlighter
  * Description: Insert a code from GitHub, Gist or whatever with SyntaxHighlighter. Based on the PastaCode plugin.  
- * Version: 0.3
+ * Version: 0.4
  * Text Domain: pcsh
  * Author: Yury Pavlov
  * Author URI: http://www.overscale.net  
@@ -12,7 +12,7 @@
 
 require_once 'SHLoader.php';
 
-const PCSH_VERSION = '0.3';
+const PCSH_VERSION = '0.4';
 
 const INIT_SH = 'initSH';
 
@@ -118,8 +118,27 @@ function sc_pcsh($atts, $content = "") {
 	if (!empty($source['code'])) {
 		// Load scripts
 		wp_enqueue_style('SyntaxHighlighterCSS');
-		// TODO highlight
-//		if (preg_match('/([0-9-,]+)/', $atts['highlight'])) {
+		
+
+		$regex = '/(\d+)\s*-\s*(\d+)/';
+		$found = array();
+    	while (preg_match($regex, $atts['hl_lines'], $found)) {
+    	    if ($found[1] <= $found[2]) {
+    	        $atts['hl_lines'] = preg_replace(
+    	            $regex, 
+    	            implode(",", range($found[1], $found[2])), 
+    	            $atts['hl_lines'],
+    	            1
+                );
+    	    } else {
+    	        $atts['hl_lines'] = preg_replace(
+    	            $regex,
+    	            '',
+    	            $atts['hl_lines'],
+    	            1
+    	        );
+    	    }
+        }
 		
 		// Wrap
 		$output = array ();
@@ -211,10 +230,15 @@ function _pcsh_github($source, $atts) {
     if ($user && $repos && $path_id) {
         $b64dcd = 'b'.'a'.'s'.'e'.'6'.'4'.'_'.'d'.'e'.'c'.'o'.'d'.'e';
         $req  = wp_sprintf(
-            'https://api.github.com/repos/%s/%s/contents/%s', $user, $repos, $path_id
+            'https://api.github.com/repos/%s/%s/contents/%s', 
+            $user, 
+            $repos, 
+            $path_id
         );
         $code = wp_remote_get($req);
-        if (!is_wp_error($code) && 200 == wp_remote_retrieve_response_code($code)) {
+        if (!is_wp_error($code) 
+            && 200 == wp_remote_retrieve_response_code($code)
+        ) {
             $data = json_decode(wp_remote_retrieve_body($code));
             $source['name'] = $data->name;
             $source['code'] = esc_html($b64dcd($data->content));
@@ -236,7 +260,10 @@ function _pcsh_github($source, $atts) {
                 $source['name'] = $name[count($name) - 1];
                 $source['code'] = esc_html(wp_remote_retrieve_body($code));
                 $source['url'] = wp_sprintf(
-                    'https://github.com/%s/%s/blob/%s/%s', $user, $repos, $revision,
+                    'https://github.com/%s/%s/blob/%s/%s', 
+                    $user, 
+                    $repos, 
+                    $revision,
                     $path_id 
                 );
                 $source['raw'] = $req2;
@@ -262,7 +289,9 @@ function _pcsh_gist($source, $atts) {
     if ($path_id) {
         $req  = wp_sprintf('https://api.github.com/gists/%s', $path_id);
         $code = wp_remote_get($req);
-        if (!is_wp_error($code) && 200 == wp_remote_retrieve_response_code($code)) {
+        if (!is_wp_error($code) 
+            && 200 == wp_remote_retrieve_response_code($code)
+        ) {
             $data = json_decode(wp_remote_retrieve_body($code));
             $source['url'] = $data->html_url;
             $data = (array)$data->files;
@@ -295,11 +324,16 @@ function _pcsh_bitbucket($source, $atts) {
         );
 
         $code = wp_remote_get($req);
-        if (!is_wp_error($code) && 200 == wp_remote_retrieve_response_code($code)) {
+        if (!is_wp_error($code) 
+            && 200 == wp_remote_retrieve_response_code($code)
+        ) {
             $source['name'] = basename($path_id);
             $source['code'] = esc_html(wp_remote_retrieve_body($code));
             $source['url'] = wp_sprintf(
-                'https://bitbucket.org/%s/%s/src/%s/%s', $user, $repos, $revision, 
+                'https://bitbucket.org/%s/%s/src/%s/%s', 
+                $user, 
+                $repos, 
+                $revision, 
                 $path_id
             );
             $source['raw'] = $req;
@@ -326,8 +360,9 @@ function _pcsh_file($source, $atts) {
         $path_id = str_replace('../', '', $path_id);
         $req  = esc_url(trailingslashit($upload_dir['baseurl']) . $path_id);
         $code = wp_remote_get($req);
-        if (!is_wp_error($code) && 200 == wp_remote_retrieve_response_code($code)) {
-
+        if (!is_wp_error($code) 
+            && 200 == wp_remote_retrieve_response_code($code)
+        ) {
             $source['name'] = basename($path_id);
             $source['code'] = esc_html(wp_remote_retrieve_body($code));
             $source['url'] = $req;
@@ -352,7 +387,9 @@ function _pcsh_pastebin($source, $atts) {
     if ($path_id) {
         $req  = wp_sprintf('http://pastebin.com/raw.php?i=%s', $path_id);
         $code = wp_remote_get($req);
-        if (!is_wp_error($code) && 200 == wp_remote_retrieve_response_code($code)) {
+        if (!is_wp_error($code) 
+            && 200 == wp_remote_retrieve_response_code($code)
+        ) {
             $source['name'] = $path_id;
             $source['code'] = esc_html(wp_remote_retrieve_body($code));
             $source['url'] = wp_sprintf('http://pastebin.com/%s', $path_id);
@@ -570,12 +607,12 @@ function pcsh_settings_page() {
                     DAY_IN_SECONDS * 7   => __('Once Weekly', 'pcsh'),
                     0                    => __('Never reload', 'pcsh'),
                     -1                   => __('No cache (dev mode)', 'pcsh'),
-                   ),
+                ),
                 'name' => 'pcsh_cache_duration'
             )
         );
     
-        //TODO
+        //TODO autoload
         add_settings_field(
             'pcsh_style',
             __('Syntax Coloration Style', 'pcsh'),
@@ -592,7 +629,7 @@ function pcsh_settings_page() {
                     'shThemeMDUltra'    => 'MDUltra',
                     'shThemeMidnight'   => 'Midnight',
                     'shThemeRDark'      => 'RDark',
-                   ),
+                ),
                 'name' => 'pcsh_style'
             )
         );    
@@ -736,9 +773,9 @@ function pcsh_text() {
     // I10n
     $text = json_encode(
         array(
-            'window-title' => __('Past\'a code', 'pcsh'),
-            'label-provider' => __('Select a provider', 'pcsh'),
-            'label-langs' => __('Select a syntax', 'pcsh'),
+            'window-title'      => __('Past\'a code', 'pcsh'),
+            'label-provider'    => __('Select a provider', 'pcsh'),
+            'label-langs'       => __('Select a syntax', 'pcsh'),
             'image-placeholder' => plugins_url(
                 '/images/pcsh-placeholder.png', __FILE__
             )
@@ -747,7 +784,7 @@ function pcsh_text() {
 
     // Services
     $services = array(
-                    'manual' => __('Manual', 'pcsh'),
+                    'manual'    => __('Manual', 'pcsh'),
                     'github'    => 'Github',
                     'gist'      => 'Gist',
                     'bitbucket' => 'Bitbucket',
@@ -759,30 +796,30 @@ function pcsh_text() {
 
     // Languages
     $langs  = array(
-        'applescript'        => 'AppleScript',
-        'as3'       => 'ActionScript3',
-        'bash'      => 'Bash',
-        'cf'        => 'CoffeeScript',
-        'cpp'       => 'C++',
-        'csharp'    => 'C#',
-        'css'       => 'CSS',
-        'pascal'    => 'Pascal',
-        'diff'      => 'Diff',
-        'erlang'    => 'Erlang',
-        'groovy'    => 'Groovy',
-        'haxe'      => 'Haxe',
-        'java'      => 'Java',
-        'javafx'    => 'JavaFX',
-        'js'        => 'JavaScript',
-        'perl'      => 'Perl',
-        'php'       => 'PHP',
-        'plain'     => 'Plain',
-        'python'    => 'Python',
-        'ruby'      => 'Ruby',
-        'scala'     => 'Scala',
-        'sql'       => 'SQL',
-        'vb'        => 'VisualBasic',
-        'xml'       => 'XML'
+        'applescript'   => 'AppleScript',
+        'as3'           => 'ActionScript3',
+        'bash'          => 'Bash',
+        'cf'            => 'CoffeeScript',
+        'cpp'           => 'C++',
+        'csharp'        => 'C#',
+        'css'           => 'CSS',
+        'pascal'        => 'Pascal',
+        'diff'          => 'Diff',
+        'erlang'        => 'Erlang',
+        'groovy'        => 'Groovy',
+        'haxe'          => 'Haxe',
+        'java'          => 'Java',
+        'javafx'        => 'JavaFX',
+        'js'            => 'JavaScript',
+        'perl'          => 'Perl',
+        'php'           => 'PHP',
+        'plain'         => 'Plain',
+        'python'        => 'Python',
+        'ruby'          => 'Ruby',
+        'scala'         => 'Scala',
+        'sql'           => 'SQL',
+        'vb'            => 'VisualBasic',
+        'xml'           => 'XML'
     );
     $langs = apply_filters('pcsh_langs', $langs);
     
@@ -832,15 +869,14 @@ function pcsh_text() {
             'label'         => __('Code', 'pcsh'), 
             'name'          => 'manual'
         ),
-   		'pcsh-tabsize' => array(
-			'classes' => array(
-   					'github', 'gist', 'bitbucket', 'pastebin', 'file',
-   					'manual'
-			),
-   				'label'         => __('Tab size', 'pcsh'),
-   				'placeholder'   => '1-20',
-   				'text'			=> '4',
-   				'name'          => 'tab_size'
+        'pcsh-tabsize'      => array(
+            'classes'           => array(
+                'github', 'gist', 'bitbucket', 'pastebin', 'file', 'manual'
+            ),
+       		'label'             => __('Tab size', 'pcsh'),
+       		'placeholder'       => '1-20',
+       		'text'			    => '4',
+       		'name'              => 'tab_size'
    		),
         'message' => array(
             'classes'       => array('manual'), 
@@ -848,13 +884,13 @@ function pcsh_text() {
             'placeholder'   => __('title', 'pcsh'),
             'name'          => 'message'
         ),
-        'pcsh-highlight' => array(
-            'classes'       => array(
+        'pcsh-highlight'    => array(
+            'classes'           => array(
                 'manual', 'github', 'gist', 'bitbucket', 'pastebin', 'file'
-             ),
-             'label'        => __('Highlited lines', 'pcsh'), 
-             'placeholder'  => '1,2,3,6', 
-             'name'         => 'hl_lines'
+            ),
+            'label'             => __('Highlited lines', 'pcsh'), 
+            'placeholder'       => '1-3,6',
+            'name'              => 'hl_lines'
         )
     );
     
@@ -877,20 +913,20 @@ function pcsh_text() {
 
     foreach ($fields as $k => $f) {
         $field = array(
-            'type' => 'textbox',
-            'name' => $f['name'],
-            'label' => $f['label'],
-        	'text' => $f['text'],
-            'classes' => 'field-to-test field pcsh-args ' 
+            'type'      => 'textbox',
+            'name'      => $f['name'],
+            'label'     => $f['label'],
+        	'text'      => $f['text'],
+            'classes'   => 'field-to-test field pcsh-args ' 
                 . implode(' ', $f['classes'])
         );
 
         if (!isset($f['placeholder'])) {
             $field['multiline'] = true;
-            $field['minWidth'] = 300;
+            $field['minWidth']  = 300;
             $field['minHeight'] = 100;
         } else {
-            $field['tooltip'] = $f['placeholder'];
+            $field['tooltip']   = $f['placeholder'];
         }
         
         $newFields[] = $field;
