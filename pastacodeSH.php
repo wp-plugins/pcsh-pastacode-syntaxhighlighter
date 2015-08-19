@@ -3,7 +3,7 @@
  * Plugin Name: PCSH
  * Plugin URI: https://github.com/Webaib/PastacodeAndSyntaxHighlighter
  * Description: Insert a code from GitHub, Gist or whatever with SyntaxHighlighter. Based on the PastaCode plugin.  
- * Version: 0.4
+ * Version: 0.4.1
  * Text Domain: pcsh
  * Author: Yury Pavlov
  * Author URI: http://www.overscale.net  
@@ -12,7 +12,7 @@
 
 require_once 'SHLoader.php';
 
-const PCSH_VERSION = '0.4';
+const PCSH_VERSION = '0.4.1';
 
 const INIT_SH = 'initSH';
 

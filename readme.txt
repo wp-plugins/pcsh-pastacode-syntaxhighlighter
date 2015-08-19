@@ -2,8 +2,8 @@
 Contributors: webaib
 Tags: embed, code, version, github, bitbucket, gist, code, SyntaxHighlighter, color highlight, syntaxique coloration
 Requires at least: 3.1
-Tested up to: 4.2.1
-Stable tag: 0.4
+Tested up to: 4.3
+Stable tag: 0.4.1
 License: GPLv2 or later
 
 Use PCSH to add code into your posts with the awesome SyntaxHighlighter plugin. So, past'a code!
@@ -154,13 +154,17 @@ Do not add you root website!! A contributor can add the shortcode to point your 
 9. *RDark* color scheme
 
 == Changelog ==
+= 0.4.1 =
+* 19 August 2015
+* Checked for Compatibility with WP 4.3 
+
 = 0.4 =
-* 29 April 2014
+* 29 April 2015
 * Checked for Compatibility with WP 4.2.1
 * Add a linehighlighting for a range of lines (e.g. 3-7) 
 
 = 0.3 =
-* 2x December 2014
+* 2x December 2015
 * Minor update in the plugin description
 
 = 0.2 =
